@@ -28,6 +28,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/api/users', [UserController::class, 'index'])->name('api.users.index');
 Route::post('/api/users', [UserController::class, 'store'])->name('api.users.store');
+Route::put('/api/users/{user}', [UserController::class, 'update'])->name('api.users.update');
+Route::delete('/api/users/{user}', [UserController::class, 'destroy'])->name('api.users.destroy');
 
 
 require __DIR__ . '/settings.php';

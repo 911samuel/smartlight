@@ -1,7 +1,9 @@
-import AppLayout from '../layouts/app-layout';
 import { Head, usePage } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import UserForm from '../components/UserForm';
+import UserTable from '../components/UserTable';
+import AppLayout from '../layouts/app-layout';
 
 interface User {
     id: number;
@@ -15,9 +17,8 @@ interface PageProps {
     auth: {
         user: User | null;
     };
-    [key: string]: unknown; // <- Add this line
+    [key: string]: unknown;
 }
-
 
 export default function UsersManagement() {
     const { props } = usePage<PageProps>();
@@ -43,19 +44,6 @@ export default function UsersManagement() {
         password: '',
         password_confirmation: '',
     });
-
-    const getPermissionColor = (permission: string) => {
-        switch (permission) {
-            case 'Admin':
-                return 'bg-blue-600';
-            case 'Technician':
-                return 'bg-blue-500';
-            case 'Viewer':
-                return 'bg-blue-400';
-            default:
-                return 'bg-gray-200';
-        }
-    };
 
     useEffect(() => {
         fetchUsers();
@@ -144,9 +132,7 @@ export default function UsersManagement() {
                 ...(formUser.password ? { password: formUser.password, password_confirmation: formUser.password_confirmation } : {}),
             };
             const response = await axios.put(`/api/users/${editingUser.id}`, updateData);
-            setUsers((prev) =>
-                prev.map((user) => (user.id === editingUser.id ? response.data.user : user))
-            );
+            setUsers((prev) => prev.map((user) => (user.id === editingUser.id ? response.data.user : user)));
             closeEditModal();
         } catch (error) {
             console.error('Failed to update user:', error);
@@ -187,211 +173,36 @@ export default function UsersManagement() {
                     </div>
                 )}
 
-                <div className="overflow-x-auto rounded-lg border border-gray-200 shadow dark:border-gray-700">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-800">
-                            <tr>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Full Name
-                                </th>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Email Address
-                                </th>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Joined
-                                </th>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                                >
-                                    Permissions
-                                </th>
-                                {isAdmin && (
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                                    >
-                                        Actions
-                                    </th>
-                                )}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
-                            {users.map((user) => (
-                                <tr key={user.id} className="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-800">
-                                    <td className="flex items-center px-6 py-3 whitespace-nowrap">
-                                        <span className="font-medium text-gray-900 dark:text-gray-100">{user.name}</span>
-                                    </td>
-                                    <td className="px-6 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{user.email}</td>
-                                    <td className="px-6 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{user.joined}</td>
-                                    <td className="px-6 py-3 whitespace-nowrap">
-                                        <span
-                                            className={`${getPermissionColor(user.permission)} rounded-full px-3 py-1 text-sm font-semibold text-white`}
-                                        >
-                                            {user.permission}
-                                        </span>
-                                    </td>
-                                    {isAdmin && (
-                                        <td className="px-6 py-3 whitespace-nowrap space-x-2">
-                                            <button
-                                                onClick={() => openEditModal(user)}
-                                                className="rounded bg-yellow-400 px-3 py-1 text-sm font-semibold text-white hover:bg-yellow-500"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteUser(user.id)}
-                                                className="rounded bg-red-600 px-3 py-1 text-sm font-semibold text-white hover:bg-red-700"
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    )}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <UserTable users={users} isAdmin={isAdmin} onEdit={openEditModal} onDelete={handleDeleteUser} />
 
                 {/* Add User Modal */}
                 {isAdmin && isModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-lg">
-                            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Add New User</h2>
-                            <div className="space-y-4">
-                                <input
-                                    type="text"
-                                    name="name"
-                                    placeholder="Full Name"
-                                    value={formUser.name}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="Email Address"
-                                    value={formUser.email}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                />
-                                <select
-                                    name="permission"
-                                    value={formUser.permission}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                >
-                                    <option value="Admin">Admin</option>
-                                    <option value="Technician">Technician</option>
-                                    <option value="Viewer">Viewer</option>
-                                </select>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    placeholder="Password"
-                                    value={formUser.password}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                />
-                                <input
-                                    type="password"
-                                    name="password_confirmation"
-                                    placeholder="Confirm Password"
-                                    value={formUser.password_confirmation}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                />
-                            </div>
-                            <div className="mt-6 flex justify-end space-x-4">
-                                <button
-                                    onClick={closeAddModal}
-                                    className="rounded bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleAddUser}
-                                    className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                                >
-                                    Add User
-                                </button>
-                            </div>
+                    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+                            <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Add New User</h2>
+                            <UserForm
+                                user={formUser}
+                                onChange={handleInputChange}
+                                onSubmit={handleAddUser}
+                                onCancel={closeAddModal}
+                                submitLabel="Add User"
+                            />
                         </div>
                     </div>
                 )}
 
                 {/* Edit User Modal */}
                 {isAdmin && isEditModalOpen && editingUser && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-lg">
-                            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Edit User</h2>
-                            <div className="space-y-4">
-                                <input
-                                    type="text"
-                                    name="name"
-                                    placeholder="Full Name"
-                                    value={formUser.name}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="Email Address"
-                                    value={formUser.email}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                />
-                                <select
-                                    name="permission"
-                                    value={formUser.permission}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                >
-                                    <option value="Admin">Admin</option>
-                                    <option value="Technician">Technician</option>
-                                    <option value="Viewer">Viewer</option>
-                                </select>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    placeholder="New Password (leave blank to keep current)"
-                                    value={formUser.password}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                />
-                                <input
-                                    type="password"
-                                    name="password_confirmation"
-                                    placeholder="Confirm New Password"
-                                    value={formUser.password_confirmation}
-                                    onChange={handleInputChange}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 dark:text-gray-100 dark:bg-gray-700"
-                                />
-                            </div>
-                            <div className="mt-6 flex justify-end space-x-4">
-                                <button
-                                    onClick={closeEditModal}
-                                    className="rounded bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleUpdateUser}
-                                    className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                                >
-                                    Update User
-                                </button>
-                            </div>
+                    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+                            <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Edit User</h2>
+                            <UserForm
+                                user={formUser}
+                                onChange={handleInputChange}
+                                onSubmit={handleUpdateUser}
+                                onCancel={closeEditModal}
+                                submitLabel="Update User"
+                            />
                         </div>
                     </div>
                 )}
