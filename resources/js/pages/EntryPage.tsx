@@ -1,3 +1,4 @@
+import AppLogo from '@/components/app-logo';
 import { Link } from '@inertiajs/react';
 import { Mail, Phone } from 'lucide-react';
 
@@ -7,9 +8,7 @@ export default function EntryPage() {
       {/* Header/Navigation */}
       <title> Street Light</title>
       <header className="bg-white dark:bg-gray-800 py-2 px-4 flex justify-between items-center shadow-sm">
-        <div className="flex items-center">
-          <span className="text-blue-600 font-bold text-xl">SMART LIGHT</span>
-        </div>
+        <AppLogo/>
         <nav className="hidden md:flex space-x-6">
           <a href="#features" className="text-gray-700 dark:text-gray-300 hover:text-blue-600">
             Features
