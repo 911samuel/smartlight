@@ -7,7 +7,8 @@ export default function SignUp() {
         email: '',
         password: '',
         password_confirmation: '',
-        agreedToTerms: false as boolean | undefined,
+        permission: 'Viewer',
+        agreedToTerms: false as boolean,
     });
 
     const [passwordMatchError, setPasswordMatchError] = useState(false);
@@ -55,6 +56,20 @@ export default function SignUp() {
                             </div>
 
                             <div>
+                                <select
+                                    value={data.permission}
+                                    onChange={(e) => setData('permission', e.target.value)}
+                                    className="w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                    required
+                                >
+                                    <option value="Admin">Admin</option>
+                                    <option value="Technician">Technician</option>
+                                    <option value="Viewer">Viewer</option>
+                                </select>
+                                {errors.permission && <div className="mt-1 text-sm text-red-600">{errors.permission}</div>}
+                            </div>
+
+                            <div>
                                 <input
                                     type="password"
                                     placeholder="Password"
@@ -75,9 +90,7 @@ export default function SignUp() {
                                     className="w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                     required
                                 />
-                                {passwordMatchError && (
-                                    <div className="mt-1 text-sm text-red-600">Password confirmation does not match.</div>
-                                )}
+                                {passwordMatchError && <div className="mt-1 text-sm text-red-600">Password confirmation does not match.</div>}
                             </div>
 
                             <div className="flex items-center">

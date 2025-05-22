@@ -12,7 +12,7 @@ class UserController extends Controller
     // Return list of users
     public function index()
     {
-        $users = User::select('id', 'name', 'email', 'location', 'created_at', 'role')->get();
+        $users = User::select('id', 'name', 'email', 'created_at', 'permission')->get();
 
         // Map to expected frontend fields
         $users = $users->map(function ($user) {
@@ -20,9 +20,8 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'location' => $user->location ?? '',
                 'joined' => $user->created_at->format('F j, Y'),
-                'permissions' => $user->role ?? 'Viewer',
+                'permission' => $user->permission ?? 'Viewer',
             ];
         });
 
@@ -35,16 +34,14 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required','email','max:255', Rule::unique('users')],
-            'location' => 'nullable|string|max:255',
-            'permissions' => 'required|string|in:Admin,Technician,Viewer',
+            'permission' => 'required|string|in:Admin,Technician,Viewer',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'location' => $validated['location'] ?? '',
-            'role' => $validated['permissions'],
+            'permission' => $validated['permission'],
             'password' => Hash::make($validated['password']),
         ]);
 
@@ -54,9 +51,8 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'location' => $user->location,
                 'joined' => $user->created_at->format('F j, Y'),
-                'permissions' => $user->role,
+                'permission' => $user->permission,
             ],
         ], 201);
     }
