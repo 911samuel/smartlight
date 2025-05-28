@@ -2,11 +2,10 @@ import { Link } from '@inertiajs/react';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { LayoutGrid, Settings, Users } from 'lucide-react';
-import { type NavItem } from 'types';
+import { LayoutGrid, Settings, Users, Mail, MessageCircle } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+const mainNavItems = [
     {
         title: 'Dashboard',
         href: '/dashboard',
@@ -18,9 +17,19 @@ const mainNavItems: NavItem[] = [
         icon: Users,
     },
     {
+        title: 'Messages',
+        href: '/messages',
+        icon: MessageCircle,
+    },
+    {
         title: 'Settings',
         href: '/settings',
         icon: Settings,
+    },
+    {
+        title: 'Contact Us',
+        href: '/contact',
+        icon: Mail,
     },
 ];
 
