@@ -1,11 +1,17 @@
-import { Link } from '@inertiajs/react';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { LayoutGrid, Settings, Users, Mail, MessageCircle } from 'lucide-react';
+import { Link } from '@inertiajs/react';
 import AppLogo from './app-logo';
+import { LayoutGrid, Users, Lightbulb, MessageCircle, Settings, Mail } from 'lucide-react';
 
-const mainNavItems = [
+type NavItem = {
+    title: string;
+    href: string;
+    icon: React.ElementType;
+};
+
+const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
@@ -17,10 +23,11 @@ const mainNavItems = [
         icon: Users,
     },
     {
-        title: 'Messages',
-        href: '/messages',
-        icon: MessageCircle,
+        title: 'Lights',
+        href: '/lights-management',
+        icon: Lightbulb,
     },
+    { title: 'Messages', href: '/messages', icon: MessageCircle },
     {
         title: 'Settings',
         href: '/settings',
@@ -51,8 +58,7 @@ export function AppSidebar() {
             <SidebarContent>
                 <NavMain items={mainNavItems} />
                 <SidebarMenu>
-                    <SidebarMenuItem>
-                    </SidebarMenuItem>
+                    <SidebarMenuItem></SidebarMenuItem>
                 </SidebarMenu>
             </SidebarContent>
 

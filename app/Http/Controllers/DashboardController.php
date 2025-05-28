@@ -11,29 +11,31 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Mock data for dashboard stats
+        $totalLights = \App\Models\Light::count();
+        $activeLights = \App\Models\Light::where('status', 'on')->count();
+
         $data = [
-            'total_lights' => 40889,
-            'active' => 10293,
-            'faulty' => 89000,
-            'energy_usage' => 2040,
+            'total_lights' => $totalLights,
+            'active' => $activeLights,
+            'faulty' => 0, // No fault data available
+            'energy_usage' => 0, // No energy usage data available
             'changes' => [
-                'total_lights' => 8.5,
-                'active' => 1.2,
-                'faulty' => -4.3,
-                'energy_usage' => 1.8,
+                'total_lights' => 0,
+                'active' => 0,
+                'faulty' => 0,
+                'energy_usage' => 0,
             ],
             'is_up' => [
                 'total_lights' => true,
                 'active' => true,
-                'faulty' => false,
+                'faulty' => true,
                 'energy_usage' => true,
             ],
             'periods' => [
-                'total_lights' => 'yesterday',
-                'active' => 'past week',
-                'faulty' => 'yesterday',
-                'energy_usage' => 'yesterday',
+                'total_lights' => '',
+                'active' => '',
+                'faulty' => '',
+                'energy_usage' => '',
             ],
         ];
 
