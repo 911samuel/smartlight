@@ -6,26 +6,27 @@ use App\Http\Controllers\LightController;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ContactController;
 
 Route::get('/', function () {
-    return Inertia::render('EntryPage');
+    return Inertia::render('user/EntryPage');
 })->name('home');
 
 Route::get('/signin', function () {
-    return Inertia::render('SignIn');
+    return Inertia::render('user/SignIn');
 })->name('signin');
 
 Route::get('/signup', function () {
-    return Inertia::render('SignUp');
+    return Inertia::render('user/SignUp');
 })->name('signup');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
-        return Inertia::render('dashboard');
+        return Inertia::render('admin/dashboard');
     })->name('dashboard');
 
     Route::get('/users', function () {
-        return Inertia::render('UsersManagement');
+        return Inertia::render('admin/UsersManagement');
     })->name('users');
 
     Route::get('/lights', [LightController::class, 'index'])->name('lights.index');
@@ -40,12 +41,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/lights-management', function () {
         return Inertia::render('LightsManagement');
     })->name('lights.management');
+    Route::get('/messages', function () {
+        return Inertia::render('user/Messages');
+    })->name('messages');
 });
+
+Route::get('/contact', function () {
+    return Inertia::render('user/ContactUs');
+})->name('contact');
+
+Route::post('/api/contact', [ContactController::class, 'submit'])->name('api.contact.submit');
 
 Route::get('/api/users', [UserController::class, 'index'])->name('api.users.index');
 Route::post('/api/users', [UserController::class, 'store'])->name('api.users.store');
 Route::put('/api/users/{user}', [UserController::class, 'update'])->name('api.users.update');
 Route::delete('/api/users/{user}', [UserController::class, 'destroy'])->name('api.users.destroy');
+
+Route::get('/api/contact/messages', [ContactController::class, 'index'])->name('api.contact.index');
 
 Route::get('/api/dashboard', [DashboardController::class, 'index'])->name('api.dashboard.index');
 

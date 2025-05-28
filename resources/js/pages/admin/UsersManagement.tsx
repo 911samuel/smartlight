@@ -1,9 +1,9 @@
 import { Head, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import UserForm from '../components/UserForm';
-import UserTable from '../components/UserTable';
-import AppLayout from '../layouts/app-layout';
+import UserForm from '@/components/UserForm';
+import UserTable from '@/components/UserTable';
+import AppLayout from '@/layouts/app-layout';
 
 interface User {
     id: number;
