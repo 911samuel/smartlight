@@ -1,12 +1,24 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LightController;
-
 use Inertia\Inertia;
+
+use App\Http\Controllers\LightController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ContactController;
+
+Route::get('/faq', function () {
+    return Inertia::render('user/Faq');
+})->name('faq');
+
+Route::get('/contact', function () {
+    return Inertia::render('user/ContactUs');
+})->name('contactus');
+
+Route::get('/how-it-works', function () {
+    return Inertia::render('user/HowItWorks');
+})->name('howitworks');
 
 Route::get('/', function () {
     return Inertia::render('user/EntryPage');

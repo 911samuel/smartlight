@@ -2,7 +2,7 @@ import axios from 'axios';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 import { useEffect, useState } from 'react';
-import AppLayout from '../layouts/app-layout';
+import AppLayout from '../../layouts/app-layout';
 
 declare global {
     interface Window {
