@@ -1,25 +1,10 @@
+import { CategoryRadioGroup, ContactInfoCard, InputField, TextAreaField } from '@/components/ui';
 import UserLayout from '@/layouts/UserLayout';
-import { AlertCircle, CheckCircle, Lightbulb, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
+import { CheckCircle, Lightbulb, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 import { ChangeEvent, FormEvent, useState } from 'react';
+import type { FormState, FormErrors } from '@/types/contactUsTypes';
+import { categories } from '@/data/contactUsData';
 
-interface FormState {
-    name: string;
-    email: string;
-    phone: string;
-    subject: string;
-    category: string;
-    message: string;
-}
-
-interface FormErrors {
-    [key: string]: string;
-}
-
-interface Category {
-    value: string;
-    label: string;
-    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-}
 
 export default function ContactUs() {
     const [form, setForm] = useState<FormState>({
@@ -42,6 +27,16 @@ export default function ContactUs() {
         });
         if (errors[e.target.name]) {
             setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
+        }
+    };
+
+    const handleInputChange = (name: keyof FormState, value: string) => {
+        setForm((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+        if (errors[name]) {
+            setErrors((prev) => ({ ...prev, [name]: '' }));
         }
     };
 
@@ -87,13 +82,6 @@ export default function ContactUs() {
         }, 1500);
     };
 
-    const categories: Category[] = [
-        { value: 'general', label: 'General Inquiry', icon: MessageCircle },
-        { value: 'complaint', label: 'Complaint', icon: AlertCircle },
-        { value: 'support', label: 'Technical Support', icon: Lightbulb },
-        { value: 'billing', label: 'Billing Issue', icon: Mail },
-    ];
-
     return (
         <UserLayout>
             <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -128,128 +116,64 @@ export default function ContactUs() {
 
                                 <form onSubmit={handleSubmit} noValidate className="space-y-6">
                                     {/* Category Selection */}
-                                    <div>
-                                        <label className="mb-3 block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                            What can we help you with?
-                                        </label>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            {categories.map((category) => {
-                                                const IconComponent = category.icon;
-                                                return (
-                                                    <label
-                                                        key={category.value}
-                                                        className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${
-                                                            form.category === category.value
-                                                                ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900'
-                                                                : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
-                                                        }`}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name="category"
-                                                            value={category.value}
-                                                            checked={form.category === category.value}
-                                                            onChange={handleChange}
-                                                            className="sr-only"
-                                                        />
-                                                        <IconComponent className="h-5 w-5" />
-                                                        <span className="text-sm font-medium">{category.label}</span>
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
+                                    <CategoryRadioGroup categories={categories} selectedValue={form.category} onChange={(value) => handleInputChange('category', value)} />
 
                                     {/* Name and Email Row */}
                                     <div className="grid gap-6 md:grid-cols-2">
-                                        <div>
-                                            <label htmlFor="name" className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                Full Name *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="name"
-                                                name="name"
-                                                value={form.name}
-                                                onChange={handleChange}
-                                                className={`w-full rounded-lg border-2 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-100 ${
-                                                    errors.name ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
-                                                }`}
-                                                placeholder="Enter your full name"
-                                            />
-                                            {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>}
-                                        </div>
-                                        <div>
-                                            <label htmlFor="email" className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                Email Address *
-                                            </label>
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                name="email"
-                                                value={form.email}
-                                                onChange={handleChange}
-                                                className={`w-full rounded-lg border-2 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-100 ${
-                                                    errors.email ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
-                                                }`}
-                                                placeholder="your.email@example.com"
-                                            />
-                                            {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>}
-                                        </div>
+                                        <InputField
+                                            label="Full Name *"
+                                            id="name"
+                                            name="name"
+                                            value={form.name}
+                                            onChange={(e) => handleInputChange('name', e.target.value)}
+                                            error={errors.name}
+                                            placeholder="Enter your full name"
+                                        />
+                                        <InputField
+                                            label="Email Address *"
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            value={form.email}
+                                            onChange={(e) => handleInputChange('email', e.target.value)}
+                                            error={errors.email}
+                                        />
                                     </div>
 
                                     {/* Phone and Subject Row */}
                                     <div className="grid gap-6 md:grid-cols-2">
-                                        <div>
-                                            <label htmlFor="phone" className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                Phone Number
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                name="phone"
-                                                value={form.phone}
-                                                onChange={handleChange}
-                                                className="w-full rounded-lg border-2 border-gray-200 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-100"
-                                                placeholder="(optional)"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label htmlFor="subject" className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                Subject *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="subject"
-                                                name="subject"
-                                                value={form.subject}
-                                                onChange={handleChange}
-                                                className={`w-full rounded-lg border-2 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-100 ${
-                                                    errors.subject ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
-                                                }`}
-                                                placeholder="Brief subject line"
-                                            />
-                                            {errors.subject && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.subject}</p>}
-                                        </div>
+                                        <InputField
+                                            label="Phone Number"
+                                            id="phone"
+                                            name="phone"
+                                            type="tel"
+                                            value={form.phone}
+                                            onChange={handleChange}
+                                            placeholder="(optional)"
+                                        />
+                                        <InputField
+                                            label="Subject *"
+                                            id="subject"
+                                            name="subject"
+                                            value={form.subject}
+                                            onChange={handleChange}
+                                            error={errors.subject}
+                                            placeholder="Brief subject line"
+                                        />
                                     </div>
 
                                     {/* Message */}
                                     <div>
-                                        <label htmlFor="message" className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                            Message *
-                                        </label>
-                                        <textarea
+                                        <TextAreaField
+                                            label="Message *"
                                             id="message"
                                             name="message"
                                             value={form.message}
                                             onChange={handleChange}
-                                            rows={6}
-                                            className={`w-full resize-none rounded-lg border-2 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-100 ${
-                                                errors.message ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
-                                            }`}
+                                            error={errors.message}
                                             placeholder="Please describe your inquiry or concern in detail..."
+                                            rows={6}
                                         />
-                                        {errors.message && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.message}</p>}
                                     </div>
 
                                     {/* Submit Button */}
@@ -280,37 +204,19 @@ export default function ContactUs() {
                             <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
                                 <h3 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">Contact Information</h3>
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-4 rounded-lg bg-blue-50 p-3">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
-                                            <Mail className="h-5 w-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-gray-900 dark:text-gray-100">Email</p>
-                                            <p className="text-blue-600">support@smartlight.com</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4 rounded-lg bg-green-50 p-3">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-600">
-                                            <Phone className="h-5 w-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-gray-900 dark:text-gray-100">Phone</p>
-                                            <p className="text-green-600">+1 (555) 123-4567</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4 rounded-lg bg-purple-50 p-3">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-600">
-                                            <MapPin className="h-5 w-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-gray-900 dark:text-gray-100">Address</p>
-                                            <p className="text-purple-600">
-                                                123 Smart Street
-                                                <br />
-                                                Tech City, TC 12345
-                                            </p>
-                                        </div>
-                                    </div>
+                                    <ContactInfoCard icon={Mail} title="Email">
+                                        <p className="text-blue-600">support@smartlight.com</p>
+                                    </ContactInfoCard>
+                                    <ContactInfoCard icon={Phone} title="Phone">
+                                        <p className="text-green-600">+1 (555) 123-4567</p>
+                                    </ContactInfoCard>
+                                    <ContactInfoCard icon={MapPin} title="Address">
+                                        <p className="text-purple-600">
+                                            123 Smart Street
+                                            <br />
+                                            Tech City, TC 12345
+                                        </p>
+                                    </ContactInfoCard>
                                 </div>
                             </div>
 
@@ -340,12 +246,12 @@ export default function ContactUs() {
                                 <p className="mb-4 text-gray-600 dark:text-gray-300">
                                     Check our FAQ section for instant answers to common questions.
                                 </p>
-                                <link
+                                <a
                                     href="/faq"
                                     className="w-full rounded-lg bg-gray-800 px-4 py-3 font-semibold text-white transition-colors hover:bg-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                                 >
                                     Visit FAQ
-                                </link>
+                                </a>
                             </div>
                         </div>
                     </div>
