@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Light;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Events\LightStatusUpdated;
 
 class LightController extends Controller
@@ -49,11 +50,11 @@ class LightController extends Controller
             $light->save();
 
             // Temporarily comment out event to isolate error
-            // event(new LightStatusUpdated($light));
+            event(new LightStatusUpdated($light));
 
             return response()->json($light);
         } catch (\Exception $e) {
-            \Log::error('Error switching on light ID ' . $id . ': ' . $e->getMessage());
+            Log::error('Error switching on light ID ' . $id . ': ' . $e->getMessage());
             return response()->json(['error' => 'Failed to switch on light'], 500);
         }
     }
@@ -78,11 +79,31 @@ class LightController extends Controller
                 // Temporarily comment out event to isolate error
                 // event(new LightStatusUpdated($light));
             } catch (\Exception $e) {
-                \Log::error('Error switching light ID ' . $light->id . ': ' . $e->getMessage());
+                Log::error('Error switching light ID ' . $light->id . ': ' . $e->getMessage());
             }
         }
 
         return response()->json(['message' => 'All lights switched ' . $status]);
+    }
+
+    /**
+     * Switch off the light.
+     */
+    public function switchOff($id)
+    {
+        try {
+            $light = Light::findOrFail($id);
+            $light->status = 'off';
+            $light->save();
+
+            // Temporarily comment out event to isolate error
+            // event(new LightStatusUpdated($light));
+
+            return response()->json($light);
+        } catch (\Exception $e) {
+            Log::error('Error switching off light ID ' . $id . ': ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to switch off light'], 500);
+        }
     }
 
     /**
@@ -106,7 +127,7 @@ class LightController extends Controller
 
             return response()->json(['message' => 'Schedule saved', 'schedule' => $schedule]);
         } catch (\Exception $e) {
-            \Log::error('Error saving schedule: ' . $e->getMessage());
+            Log::error('Error saving schedule: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to save schedule'], 500);
         }
     }

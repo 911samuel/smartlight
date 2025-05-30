@@ -117,12 +117,12 @@ export default function HowItWorks() {
                                                         STEP {step.id}
                                                     </div>
                                                     <h3 className="text-xl font-bold text-gray-900 dark:text-gray-950 mb-3">{step.title}</h3>
-                                                    <p className="text-gray-600 dark:text-gray-300 mb-4">{step.description}</p>
+                                                    <p className="text-gray-600 dark:text-gray-700 mb-4">{step.description}</p>
 
                                                     {isActive && (
                                                         <div className="mt-4 space-y-2">
                                                             {step.details.map((detail, idx) => (
-                                                                <div key={idx} className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                                                                <div key={idx} className="flex items-center text-sm text-gray-700 dark:text-gray-500">
                                                                     <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
                                                                     {detail}
                                                                 </div>

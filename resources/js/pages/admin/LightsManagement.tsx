@@ -3,6 +3,7 @@ import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 import { useEffect, useState } from 'react';
 import AppLayout from '../../layouts/app-layout';
+import { Head } from '@inertiajs/react';
 
 declare global {
     interface Window {
@@ -32,6 +33,13 @@ const LightsManagement = () => {
     const [controlMode, setControlMode] = useState<'manual' | 'automatic'>('manual');
     const [schedule, setSchedule] = useState({ onTime: '', offTime: '' });
 
+    const breadcrumbs = [
+        {
+            title: 'Light Management',
+            href: '/lights',
+        },
+    ];
+
     useEffect(() => {
         fetchLights();
         fetchSchedule();
@@ -51,6 +59,23 @@ const LightsManagement = () => {
             await fetchLights();
         } catch (error) {
             console.error('Failed to switch on light:', error);
+        }
+    };
+
+    const switchOffLight = async (id: string) => {
+        try {
+            console.log('Switching off light with id:', id);
+            // Optimistically update UI
+            setLights((prev) => {
+                console.log('Previous lights state:', prev);
+                return prev.map((light) =>
+                    light.id === id ? { ...light, status: 'off' } : light
+                );
+            });
+            await axios.post(`/lights/${id}/switch-off`);
+            await fetchLights();
+        } catch (error) {
+            console.error('Failed to switch off light:', error);
         }
     };
 
@@ -103,8 +128,9 @@ const LightsManagement = () => {
     };
 
     return (
-        <AppLayout>
-            <div className="mx-auto max-w-4xl p-4 dark:bg-gray-900 dark:text-gray-100">
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="User Management" />
+            <div className="p-4 dark:bg-gray-900 dark:text-gray-100">
                 <h1 className="mb-4 text-3xl font-bold">Lights Management</h1>
 
                 <div className="mb-4 flex items-center space-x-4">
@@ -198,14 +224,21 @@ const LightsManagement = () => {
                                 <td className="border px-4 py-2 dark:border-gray-600">{light.status}</td>
                                 <td className="border px-4 py-2 dark:border-gray-600">
                                     {controlMode === 'manual' ? (
-                                        light.status !== 'on' && (
-                                            <button
-                                                onClick={() => switchOnLight(light.id)}
-                                                className="rounded bg-blue-600 px-3 py-1 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-                                            >
-                                                Switch On
-                                            </button>
-                                        )
+light.status !== 'on' ? (
+    <button
+        onClick={() => switchOnLight(light.id)}
+        className="rounded bg-blue-600 px-3 py-1 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+    >
+        On
+    </button>
+) : (
+    <button
+        onClick={() => switchOffLight(light.id)}
+        className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
+    >
+        Off
+    </button>
+)
                                     ) : (
                                         <div className="flex gap-2">
                                             <input

@@ -67,9 +67,35 @@ export default function ContactUs() {
         setIsSubmitting(true);
         setErrors({});
 
-        // Simulate API call
-        setTimeout(() => {
-            setSuccessMessage("Thank you for contacting SmartLight! We'll get back to you within 24 hours.");
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || '',
+                },
+                body: JSON.stringify({
+                    name: form.name,
+                    email: form.email,
+                    message: form.message,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (errorData.errors) {
+                    setErrors(errorData.errors);
+                } else {
+                    setErrors({ message: 'Failed to submit the form. Please try again.' });
+                }
+                setIsSubmitting(false);
+                return;
+            }
+
+            const data = await response.json();
+            setSuccessMessage(data.message || "Thank you for contacting SmartLight! We'll get back to you within 24 hours.");
             setForm({
                 name: '',
                 email: '',
@@ -78,8 +104,11 @@ export default function ContactUs() {
                 category: 'general',
                 message: '',
             });
+        } catch {
+            setErrors({ message: 'An error occurred. Please try again later.' });
+        } finally {
             setIsSubmitting(false);
-        }, 1500);
+        }
     };
 
     return (

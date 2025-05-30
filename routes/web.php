@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/lights', [LightController::class, 'index'])->name('lights.index');
     Route::post('/lights', [LightController::class, 'store'])->name('lights.store');
     Route::post('/lights/{id}/switch-on', [LightController::class, 'switchOn'])->name('lights.switchOn');
+    Route::post('/lights/{id}/switch-off', [LightController::class, 'switchOff'])->name('lights.switchOff');
 
     Route::post('/lights/switch-all', [LightController::class, 'switchAll'])->name('lights.switchAll');
     Route::post('/lights/schedule', [LightController::class, 'schedule'])->name('lights.schedule');
@@ -51,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/lights/recent', [LightController::class, 'recentLights'])->name('lights.recent');
 
     Route::get('/lights-management', function () {
-        return Inertia::render('LightsManagement');
+        return Inertia::render('admin/LightsManagement');
     })->name('lights.management');
     Route::get('/messages', function () {
         return Inertia::render('user/Messages');
@@ -76,4 +77,3 @@ Route::get('/api/dashboard', [DashboardController::class, 'index'])->name('api.d
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
-?>
