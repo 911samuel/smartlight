@@ -94,11 +94,6 @@ export default function SignIn() {
                           <span className="mx-4 text-sm text-gray-500 dark:text-gray-400">or</span>
                           <div className="h-px flex-grow bg-gray-300 dark:bg-gray-600"></div>
                       </div>
-
-                      <button className="flex w-full items-center justify-center rounded-md border py-2 text-gray-900 transition duration-300 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-700">
-                          Sign in with Google
-                      </button>
-
                       <div className="mt-4 text-center text-sm text-gray-900 dark:text-gray-300">
                           Don't have an account?{' '}
                           <Link href="/signup" className="text-blue-600 hover:underline">
